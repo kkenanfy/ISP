@@ -1,0 +1,10 @@
+## Build & Derleme Çıktıları
+[Bb]in/
+[Oo]bj/
+
+## Visual Studio & Editör Geçici Dosyaları
+.vs/
+*.user
+*.suo
+.idea/
+.vscode/
