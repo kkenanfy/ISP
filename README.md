@@ -1,6 +1,6 @@
 # Grup 4 - Arayüz Ayrımı Prensibi (Interface Segregation Principle - ISP) 
 
-Bu proje, Isparta Uygulamalı Bilimler Üniversitesi Bilgisayar Programcılığı bölümü ders kapsamındaki sunum için C# ile hazırlanmıştır. Projede SOLID prensiplerinden biri olan **Interface Segregation Principle (ISP)** kuralının ihlal edilmesi (Kötü Kod) ve bu sorunun arayüzlerin parçalanmasıyla nasıl çözülmesi gerektiği (İyi Kod) gösterilmektedir.
+Projede SOLID prensiplerinden biri olan **Interface Segregation Principle (ISP)** kuralının ihlal edilmesi (Kötü Kod) ve bu sorunun arayüzlerin parçalanmasıyla nasıl çözülmesi gerektiği (İyi Kod) gösterilmektedir.
 
 ## Proje İçeriği
 * **Kötü Kod Senaryosu:** Devasa bir `IRepository` arayüzünün salt okunur bir sınıfa uygulanması sonucunda ortaya çıkan `NotImplementedException` hatasını gösterir.
