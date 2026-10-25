@@ -1,146 +1,182 @@
 using System;
 using System.Collections.Generic;
 
-// DEVASA VE ŞİŞRİLMİŞ ARAYÜZ (ISP İhlali)
-public interface IRepository<T>
+namespace ISP_KotuKod
 {
-    void Ekle(T entity);
-    void Sil(int id);
-    List<T> Listele();
-    void RaporAl();
-}
-
-public class Product 
-{
-    public int Id { get; set; }
-    public string? Name { get; set; }
-}
-
-// Salt okunur sınıf, ihtiyacı olmayan Ekle ve Sil metotlarını zoraki implemente ediyor
-public class ReadOnlyProductRepository : IRepository<Product>
-{
-    public List<Product> Listele()
+    class Urun
     {
-        Console.WriteLine("Ürünler listelendi (Salt Okunur).");
-        return new List<Product>();
+        public int Id { get; set; }
+        public string Ad { get; set; }
     }
 
-    public void RaporAl()
+    interface IRepository
     {
-        Console.WriteLine("Ürün raporu alındı.");
+        void Ekle(Urun urun);
+        void Sil(int id);
+        List<Urun> Listele();
+        void RaporAl();
     }
 
-    public void Ekle(Product entity)
+    // Bu sinif sadece okuma yapacak ama Ekle ve Sil'i de yazmak zorunda
+    class OkumaRepository : IRepository
     {
-        throw new NotImplementedException("HATA: Bu sınıfın ekleme yetkisi yoktur! (ISP İhlali)"); 
-    }
+        List<Urun> urunler = new List<Urun>();
 
-    public void Sil(int id)
-    {
-        throw new NotImplementedException("HATA: Bu sınıfın silme yetkisi yoktur! (ISP İhlali)"); 
-    }
-}
-
-class Program
-{
-    static void Main(string[] args)
-    {
-        Console.WriteLine("=== KÖTÜ KOD SENARYOSU ===");
-        
-        IRepository<Product> repo = new ReadOnlyProductRepository();
-        repo.Listele(); 
-
-        try 
+        public OkumaRepository()
         {
-            repo.Ekle(new Product { Id = 1, Name = "Laptop" });
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message); // ISP İhlali hatası ekrana basılacak
+            urunler.Add(new Urun { Id = 1, Ad = "Laptop" });
+            urunler.Add(new Urun { Id = 2, Ad = "Mouse" });
         }
 
-        Console.ReadLine();
+        public List<Urun> Listele()
+        {
+            Console.WriteLine("Urunler listelendi.");
+            return urunler;
+        }
+
+        public void RaporAl()
+        {
+            Console.WriteLine("Rapor alindi. Toplam urun: " + urunler.Count);
+        }
+
+        public void Ekle(Urun urun)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Sil(int id)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("--- KOTU KOD ---");
+
+            IRepository repo = new OkumaRepository();
+            repo.Listele();
+            repo.RaporAl();
+
+            Console.WriteLine("Ürün Ekleniyor...");
+            repo.Ekle(new Urun { Id = 3, Ad = "Klavye" });
+
+            Console.ReadLine();
+        }
     }
 }
 
 
 
-// using System;
-// using System.Collections.Generic;
 
-// public class Product 
+// namespace ISP_IyiKod
 // {
-//     public int Id { get; set; }
-//     public string? Name { get; set; }
-// }
-
-// // ÇÖZÜM: Arayüzleri sorumluluklarına göre mantıksal parçalara ayırıyoruz (Interface Segregation)
-// public interface IReadRepository<T>
-// {
-//     List<T> Listele();
-// }
-
-// public interface IWriteRepository<T>
-// {
-//     void Ekle(T entity);
-//     void Sil(int id);
-// }
-
-// public interface IReportable
-// {
-//     void RaporAl();
-// }
-
-// // Salt okunur sınıfımız artık sadece ihtiyacı olan arayüzleri uygular!
-// public class ReadOnlyProductRepository : IReadRepository<Product>, IReportable
-// {
-//     public List<Product> Listele()
+//     class Urun
 //     {
-//         Console.WriteLine("Ürünler başarıyla listelendi (Salt Okunur).");
-//         return new List<Product>();
+//         public int Id { get; set; }
+//         public string Ad { get; set; }
 //     }
 
-//     public void RaporAl()
+//     interface IOkunabilir
 //     {
-//         Console.WriteLine("Ürün raporu başarıyla alındı.");
-//     }
-//     // Artık gereksiz Ekle ve Sil metotları yok, ortada NotImplementedException da yok!
-// }
-
-// // Hem okuma hem yazma yapabilen tam yetkili repository
-// public class FullProductRepository : IReadRepository<Product>, IWriteRepository<Product>
-// {
-//     public List<Product> Listele()
-//     {
-//         Console.WriteLine("Ürünler listelendi.");
-//         return new List<Product>();
+//         List<Urun> Listele();
+//         void RaporAl();
 //     }
 
-//     public void Ekle(Product entity)
+//     // Yazma isleri burada
+//     interface IYazilabilir
 //     {
-//         Console.WriteLine("Ürün veritabanına başarıyla eklendi.");
+//         void Ekle(Urun urun);
+//         void Sil(int id);
 //     }
 
-//     public void Sil(int id)
+//     // Bu sinif sadece okuma yapiyor
+//     class OkumaRepository : IOkunabilir
 //     {
-//         Console.WriteLine("Ürün veritabanından silindi.");
+//         List<Urun> urunler = new List<Urun>();
+
+//         public OkumaRepository()
+//         {
+//             urunler.Add(new Urun { Id = 1, Ad = "Laptop" });
+//             urunler.Add(new Urun { Id = 2, Ad = "Mouse" });
+//         }
+
+//         public List<Urun> Listele()
+//         {
+//             Console.WriteLine("Urunler listelendi.");
+//             return urunler;
+//         }
+
+//         public void RaporAl()
+//         {
+//             Console.WriteLine("Rapor alindi. Toplam urun: " + urunler.Count);
+//         }
 //     }
-// }
 
-// class Program
-// {
-//     static void Main(string[] args)
+//     // Bu sinif hem okuyor hem yaziyor
+//     class TamRepository : IOkunabilir, IYazilabilir
 //     {
-//         Console.WriteLine("=== İYİ KOD (ÇÖZÜM) SENARYOSU ===");
+//         List<Urun> urunler = new List<Urun>();
 
-//         // Sadece okuma yapabilen nesne
-//         IReadRepository<Product> readRepo = new ReadOnlyProductRepository();
-//         readRepo.Listele();
+//         public TamRepository()
+//         {
+//             urunler.Add(new Urun { Id = 1, Ad = "Laptop" });
+//             urunler.Add(new Urun { Id = 2, Ad = "Mouse" });
+//         }
 
-//         // Tam yetkili nesne
-//         IWriteRepository<Product> writeRepo = new FullProductRepository();
-//         writeRepo.Ekle(new Product { Id = 1, Name = "Laptop" });
+//         public List<Urun> Listele()
+//         {
+//             Console.WriteLine("Urunler listelendi.");
+//             return urunler;
+//         }
 
-//         Console.ReadLine();
+//         public void RaporAl()
+//         {
+//             Console.WriteLine("Rapor alindi. Toplam urun: " + urunler.Count);
+//         }
+
+//         public void Ekle(Urun urun)
+//         {
+//             urunler.Add(urun);
+//             Console.WriteLine(urun.Ad + " eklendi.");
+//         }
+
+//         public void Sil(int id)
+//         {
+//             for (int i = 0; i < urunler.Count; i++)
+//             {
+//                 if (urunler[i].Id == id)
+//                 {
+//                     Console.WriteLine(urunler[i].Ad + " silindi.");
+//                     urunler.RemoveAt(i);
+//                     break;
+//                 }
+//             }
+//         }
+//     }
+
+//     class Program
+//     {
+//         static void Main()
+//         {
+//             Console.WriteLine("--- IYI KOD ---");
+
+//             // Sadece okuma yapan sinif
+//             IOkunabilir okuma = new OkumaRepository();
+//             okuma.Listele();
+//             okuma.RaporAl();
+
+//             Console.WriteLine();
+
+//             // Hem okuyan hem yazan sinif
+//             TamRepository tam = new TamRepository();
+//             tam.Ekle(new Urun { Id = 3, Ad = "Klavye" });
+//             tam.Sil(1);
+//             tam.RaporAl();
+
+//             Console.ReadLine();
+//         }
 //     }
 // }
